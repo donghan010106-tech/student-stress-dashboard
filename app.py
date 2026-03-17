@@ -49,15 +49,15 @@ X_data, X_test, y_test, ols_pred, rf_pred, ols_model, rf_model = train_models(df
 st.sidebar.title("Navigation")
 page = st.sidebar.radio(
     "Select a page:",
-    ["🧹 Data Preprocessing & EDA", 
-     "📊 Visualization", 
-     "🤖 Model Training"]
+    ["Data Preprocessing & EDA", 
+     "Visualization", 
+     "Model Training"]
 )
 
 # ==========================================
 # PAGE 1: DATA PREPROCESSING & EDA
 # ==========================================
-if page == "🧹 Data Preprocessing & EDA":
+if page == "Data Preprocessing & EDA":
     st.title("Data Preprocessing & Exploratory Data Analysis")
     st.markdown("This section explains how the raw data was cleaned and prepared for modeling.")
     
@@ -96,7 +96,7 @@ if page == "🧹 Data Preprocessing & EDA":
 # ==========================================
 # PAGE 2: VISUALIZATION (UPDATED WITH EXCEL DASHBOARD CHARTS)
 # ==========================================
-elif page == "📊 Visualization":
+elif page == "Visualization":
     st.title("Data Visualization & Key Metrics")
     
     st.sidebar.subheader("Filters")
@@ -236,7 +236,7 @@ elif page == "📊 Visualization":
 # ==========================================
 # PAGE 3: MODEL TRAINING
 # ==========================================
-elif page == "🤖 Model Training":
+elif page == "Model Training":
     st.title("Model Training & Evaluation")
     st.markdown("Evaluating the performance of **Ordinary Least Squares (OLS)** and **Random Forest Regressor**.")
     
