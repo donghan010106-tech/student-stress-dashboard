@@ -61,7 +61,8 @@ if page == "🧹 Data Preprocessing & EDA":
     st.title("Data Preprocessing & Exploratory Data Analysis")
     st.markdown("This section explains how the raw data was cleaned and prepared for modeling.")
     
-    raw_count = len(df_raw) if not df_raw.empty else 416 
+    # Sửa lỗi logic đếm bảng
+    raw_count = len(df_raw) if len(df_raw) > 0 else 416 
     clean_count = len(df_clean)
     removed_count = raw_count - clean_count
 
@@ -84,7 +85,8 @@ if page == "🧹 Data Preprocessing & EDA":
     col_a, col_b = st.columns(2)
     with col_a:
         st.subheader("Raw Data Sample")
-        if not df_raw.empty:
+        # Sửa lỗi kiểm tra bảng rỗng an toàn
+        if len(df_raw) > 0:
             st.dataframe(df_raw.head())
         else:
             st.warning("Raw data file not found.")
