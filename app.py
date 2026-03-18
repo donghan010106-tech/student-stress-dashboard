@@ -117,17 +117,15 @@ elif page == "Visualization":
     # --- PIVOT BAR CHARTS TỪ EXCEL ---
     st.subheader("Average Analytics")
 
-    col_pivot1, col_pivot2 = st.columns(2)
 
     
 
-    with col_pivot2:
-        st.markdown("**2. Average Academic Stress Level by GPA Rating**")
-        pivot2 = df_filtered.groupby('GPA_Rating')['Academic_Stress_Level'].mean().reset_index()
-        fig_p2 = px.bar(pivot2, x='GPA_Rating', y='Academic_Stress_Level', 
-                        color_discrete_sequence=['#FF9800'], text_auto='.2f')
-        fig_p2.update_layout(xaxis_title="GPA Rating (1 = Poor to 5 = Excellent)", yaxis_title="Avg Academic Stress Level")
-        st.plotly_chart(fig_p2, use_container_width=True)
+    st.markdown("**2. Average Academic Stress Level by GPA Rating**")
+    pivot2 = df_filtered.groupby('GPA_Rating')['Academic_Stress_Level'].mean().reset_index()
+    fig_p2 = px.bar(pivot2, x='GPA_Rating', y='Academic_Stress_Level', 
+                    color_discrete_sequence=['#FF9800'], text_auto='.2f')
+    fig_p2.update_layout(xaxis_title="GPA Rating (1 = Poor to 5 = Excellent)", yaxis_title="Avg Academic Stress Level")
+    st.plotly_chart(fig_p2, use_container_width=True)
         
     st.markdown("---")
     
@@ -139,12 +137,11 @@ elif page == "Visualization":
     
     
 
-    with col_scat2:
-        fig_s2 = px.scatter(df_filtered, x='Daytime_Fatigue', y='Academic_Burnout_Score',
-                            trendline='ols', opacity=0.5,
-                            title="Daytime Fatigue vs Academic Burnout Score",
-                            color_discrete_sequence=['#e74c3c'])
-        st.plotly_chart(fig_s2, use_container_width=True)
+    fig_s2 = px.scatter(df_filtered, x='Daytime_Fatigue', y='Academic_Burnout_Score',
+                        trendline='ols', opacity=0.5,
+                        title="Daytime Fatigue vs Academic Burnout Score",
+                        color_discrete_sequence=['#e74c3c'])
+    st.plotly_chart(fig_s2, use_container_width=True)
 
     
 
