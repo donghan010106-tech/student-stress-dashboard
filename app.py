@@ -73,42 +73,141 @@ if page == "Data Preprocessing & EDA":
 # PAGE 2: VISUALIZATION
 # ==========================================
 elif page == "Visualization":
-    st.title("Data Visualization")
+    st.title("Data Visualization & Key Metrics")
     
-    # 4 KPI Metrics
-    k1, k2, k3, k4 = st.columns(4)
-    k1.metric("Total Students", len(df_clean))
-    k2.metric("Avg Stress Level", f"{df_clean['Academic_Stress_Level'].mean():.2f}")
-    k3.metric("Avg GPA Rating", f"{df_clean['GPA_Rating'].mean():.1f}")
-    k4.metric("Avg Sleep Risk", f"{df_clean['Sleep_Hygiene_Risk'].mean():.1f}")
+    st.sidebar.subheader("Filters")
+    selected_year = st.sidebar.multiselect("Select Year of Study:", df_clean['Year'].unique(), default=df_clean['Year'].unique())
+    selected_gender = st.sidebar.multiselect("Select Gender (0: Male, 1: Female):", df_clean['Gender'].unique(), default=df_clean['Gender'].unique())
     
+    df_filtered = df_clean[(df_clean['Year'].isin(selected_year)) & (df_clean['Gender'].isin(selected_gender))]
+    
+    # --- 4 THẺ KPI TỪ EXCEL DASHBOARD ---
+    kpi1, kpi2, kpi3, kpi4 = st.columns(4)
+    
+    # Tính toán động dựa trên bộ lọc
+    total_students = len(df_filtered)
+    avg_stress = df_filtered['Academic_Stress_Level'].mean()
+    avg_gpa = df_filtered['GPA_Rating'].mean()
+    avg_sleep_risk = df_filtered['Sleep_Hygiene_Risk'].mean()
+    
+    # Hiển thị
+    kpi1.metric("Total Students", f"{total_students}")
+    kpi2.metric("Avg Stress Level", f"{avg_stress:.2f}")
+    kpi3.metric("Avg GPA Rating", f"{avg_gpa:.1f}")
+    kpi4.metric("Avg Sleep Hygiene Risk", f"{avg_sleep_risk:.1f}")
+    # ------------------------------------
     st.markdown("---")
     
-    # Stress Level Pie Chart
-    st.subheader("Academic Stress Level Distribution")
-    stress_map = {0: 'No stress', 1: 'Low stress', 2: 'High stress', 3: 'Extremely high stress'}
-    pie_data = df_clean['Academic_Stress_Level'].map(stress_map).value_counts().reset_index()
-    pie_data.columns = ['Level', 'Count']
-    fig_pie = px.pie(pie_data, values='Count', names='Level', hole=0.3, color_discrete_sequence=px.colors.qualitative.Pastel)
+    st.subheader("Distribution of Academic Stress Levels")
+    
+    stress_mapping = {0: 'No stress', 1: 'Low stress', 2: 'High stress', 3: 'Extremely high stress'}
+    df_pie = df_filtered.copy()
+    df_pie['Stress_Label'] = df_pie['Academic_Stress_Level'].map(stress_mapping)
+    stress_counts = df_pie['Stress_Label'].value_counts().reset_index()
+    stress_counts.columns = ['Stress Level', 'Count']
+    
+    fig_pie = px.pie(stress_counts, values='Count', names='Stress Level', 
+                     color_discrete_sequence=px.colors.qualitative.Pastel,
+                     hole=0.3) 
+    fig_pie.update_traces(textposition='inside', textinfo='percent+label')
     st.plotly_chart(fig_pie, use_container_width=True)
+    
+    st.markdown("---")
+    
+    # --- PIVOT BAR CHARTS TỪ EXCEL ---
+    st.subheader("Average Analytics")
+
+    col_pivot1, col_pivot2 = st.columns(2)
+
+    with col_pivot1:
+        st.markdown("**1. Average Sleep Hygiene Risk by Difficulty Falling Asleep**")
+        pivot1 = df_filtered.groupby('Difficulty_Falling_Asleep')['Sleep_Hygiene_Risk'].mean().reset_index()
+        fig_p1 = px.bar(pivot1, x='Difficulty_Falling_Asleep', y='Sleep_Hygiene_Risk', 
+                        color_discrete_sequence=['#4CAF50'], text_auto='.2f')
+        fig_p1.update_layout(xaxis_title="Difficulty Falling Asleep (0 to 4)", yaxis_title="Avg Sleep Hygiene Risk")
+        st.plotly_chart(fig_p1, use_container_width=True)
+
+    with col_pivot2:
+        st.markdown("**2. Average Academic Stress Level by GPA Rating**")
+        pivot2 = df_filtered.groupby('GPA_Rating')['Academic_Stress_Level'].mean().reset_index()
+        fig_p2 = px.bar(pivot2, x='GPA_Rating', y='Academic_Stress_Level', 
+                        color_discrete_sequence=['#FF9800'], text_auto='.2f')
+        fig_p2.update_layout(xaxis_title="GPA Rating (1 = Poor to 5 = Excellent)", yaxis_title="Avg Academic Stress Level")
+        st.plotly_chart(fig_p2, use_container_width=True)
+        
+    st.markdown("---")
+    
+    # --- SCATTER CHARTS TRỰC TIẾP TỪ SHEET DASHBOARD ---
+    st.subheader("Relationships Analysis (Derived from Excel DASHBOARD)")
+    st.markdown("Exploring the correlations using scatter plots with OLS trendlines.")
+    
+    col_scat1, col_scat2 = st.columns(2)
+    
+    with col_scat1:
+        fig_s1 = px.scatter(df_filtered, x='Phone_Usage_Before_Sleep', y='Sleep_Hygiene_Risk',
+                            trendline='ols', opacity=0.5,
+                            title="Phone Usage vs Sleep Hygiene Risk",
+                            color_discrete_sequence=['#2ecc71'])
+        st.plotly_chart(fig_s1, use_container_width=True)
+
+    with col_scat2:
+        fig_s2 = px.scatter(df_filtered, x='Daytime_Fatigue', y='Academic_Burnout_Score',
+                            trendline='ols', opacity=0.5,
+                            title="Daytime Fatigue vs Academic Burnout Score",
+                            color_discrete_sequence=['#e74c3c'])
+        st.plotly_chart(fig_s2, use_container_width=True)
+
+    fig_s3 = px.scatter(df_filtered, x='Sleep_Impact_on_Concentration', y='Academic_Burnout_Score',
+                        trendline='ols', opacity=0.5,
+                        title="Sleep Impact on Concentration vs Academic Burnout Score",
+                        color_discrete_sequence=['#3498db'])
+    st.plotly_chart(fig_s3, use_container_width=True)
 
     st.markdown("---")
     
-    # Scatter Plots
-    st.subheader("Relationship Analysis")
-    col_s1, col_s2 = st.columns(2)
-    with col_s1:
-        st.plotly_chart(px.scatter(df_clean, x='Phone_Usage_Before_Sleep', y='Sleep_Hygiene_Risk', trendline='ols', title="Phone vs Sleep Risk"), use_container_width=True)
-    with col_s2:
-        st.plotly_chart(px.scatter(df_clean, x='Daytime_Fatigue', y='Academic_Burnout_Score', trendline='ols', title="Fatigue vs Burnout"), use_container_width=True)
+    # --- HISTOGRAMS (CODE DO BẠN CUNG CẤP) ---
+    st.subheader("Distributions of Engineered Features")
+    fig_dist = plt.figure(figsize=(14, 5))
+
+    plt.subplot(1, 2, 1)
+    sns.histplot(df_filtered['Sleep_Hygiene_Risk'], kde=True, color='teal')
+    plt.title('Distribution of Sleep Hygiene Risk')
+
+    plt.subplot(1, 2, 2)
+    sns.histplot(df_filtered['Academic_Burnout_Score'], kde=True, color='coral')
+    plt.title('Distribution of Academic Burnout Score')
+
+    plt.tight_layout()
+    st.pyplot(fig_dist)
+    
+    st.markdown("---")
+
+    col1, col2 = st.columns(2)
+    with col1:
+        st.subheader("Distribution of Sleep Hours")
+        fig1, ax1 = plt.subplots(figsize=(8, 5))
+        sns.histplot(df_filtered['Sleep_Hours_Total'], kde=True, color='skyblue', ax=ax1)
+        ax1.set_xlabel("Sleep Hours")
+        ax1.set_ylabel("Count")
+        st.pyplot(fig1)
+        
+    with col2:
+        st.subheader("Average Sleep Hours by Study Year")
+        fig2, ax2 = plt.subplots(figsize=(8, 5))
+        avg_sleep_by_year = df_filtered.groupby('Year')['Sleep_Hours_Total'].mean().reset_index()
+        sns.barplot(x='Year', y='Sleep_Hours_Total', data=avg_sleep_by_year, palette='viridis', ax=ax2)
+        ax2.set_xlabel("Year of Study")
+        ax2.set_ylabel("Average Sleep Hours")
+        st.pyplot(fig2)
 
     st.markdown("---")
     
-    # Boxplot GPA
     st.subheader("Academic Stress Level across GPA Ratings")
-    fig_box, ax_box = plt.subplots(figsize=(10, 5))
-    sns.boxplot(x='GPA_Rating', y='Academic_Stress_Level', data=df_clean, palette='viridis', ax=ax_box)
-    st.pyplot(fig_box)
+    fig3, ax3 = plt.subplots(figsize=(10, 6))
+    sns.boxplot(x='GPA_Rating', y='Academic_Stress_Level', data=df_filtered, palette='viridis', ax=ax3)
+    ax3.set_xlabel('GPA Rating (1 = Poor to 5 = Excellent)')
+    ax3.set_ylabel('Academic Stress Level (0 = No Stress to 3 = Extremely High)')
+    st.pyplot(fig3)
 
 # ==========================================
 # PAGE 3: MODEL TRAINING
