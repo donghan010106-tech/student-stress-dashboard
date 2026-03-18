@@ -174,12 +174,13 @@ elif page == "Visualization":
         st.pyplot(fig1)
         
     with col2:
-        st.subheader("Average Sleep Hours by Study Year")
+        st.subheader("Impact of Exercise on Stress Level")
         fig2, ax2 = plt.subplots(figsize=(8, 5))
-        avg_sleep_by_year = df_filtered.groupby('Year')['Sleep_Hours_Total'].mean().reset_index()
-        sns.barplot(x='Year', y='Sleep_Hours_Total', data=avg_sleep_by_year, palette='viridis', ax=ax2)
-        ax2.set_xlabel("Year of Study")
-        ax2.set_ylabel("Average Sleep Hours")
+        # Tính điểm stress trung bình theo tần suất tập thể dục
+        avg_stress_by_exercise = df_clean.groupby('Exercise_Frequency')['Academic_Stress_Level'].mean().reset_index()
+        sns.barplot(x='Exercise_Frequency', y='Academic_Stress_Level', data=avg_stress_by_exercise, palette='coolwarm', ax=ax2)
+        ax2.set_xlabel("Exercise Frequency (0 = Never to 4 = Every day)")
+        ax2.set_ylabel("Average Academic Stress Level")
         st.pyplot(fig2)
 
     st.markdown("---")
