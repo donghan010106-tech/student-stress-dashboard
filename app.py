@@ -147,7 +147,7 @@ elif page == "Visualization":
 
     st.markdown("---")
     
-    # --- HISTOGRAMS (CODE DO BẠN CUNG CẤP) ---
+    # --- HISTOGRAMS  ---
     st.subheader("Distributions of Engineered Features")
     fig_dist = plt.figure(figsize=(14, 5))
 
@@ -190,7 +190,6 @@ elif page == "Visualization":
     ax3.set_xlabel('GPA Rating (1 = Poor to 5 = Excellent)')
     ax3.set_ylabel('Academic Stress Level (0 = No Stress to 3 = Extremely High)')
     st.pyplot(fig3)
-
 # ==========================================
 # PAGE 3: MODEL TRAINING
 # ==========================================
