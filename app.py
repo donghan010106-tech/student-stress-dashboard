@@ -130,22 +130,22 @@ elif page == "Visualization":
     st.markdown("---")
     
     # --- SCATTER CHARTS TRỰC TIẾP TỪ SHEET DASHBOARD ---
-    st.subheader("Relationships Analysis (Derived from Excel DASHBOARD)")
-    st.markdown("Exploring the correlations using scatter plots with OLS trendlines.")
+    # Tạo bảng map để đổi số thành chữ trên trục X cho đẹp
+    df_box = df_clean.copy() # Nếu file bạn đang dùng df_filtered thì đổi tên tương ứng nhé
+    stress_map = {0: 'No stress', 1: 'Low stress', 2: 'High stress', 3: 'Extremely high stress'}
+    df_box['Stress_Label'] = df_box['Academic_Stress_Level'].map(stress_map)
     
-    col_scat1, col_scat2 = st.columns(2)
+    # Vẽ biểu đồ Boxplot bằng Plotly
+    fig_s2 = px.box(df_box, x='Stress_Label', y='Academic_Burnout_Score',
+                    color='Stress_Label',
+                    title="Stress Level vs Academic Burnout Score",
+                    category_orders={"Stress_Label": ['No stress', 'Low stress', 'High stress', 'Extremely high stress']},
+                    color_discrete_sequence=px.colors.qualitative.Pastel)
     
+    # Ẩn chú thích (legend) phụ vì trục X đã hiện tên rồi
+    fig_s2.update_layout(showlegend=False, xaxis_title="Academic Stress Level", yaxis_title="Burnout Score")
     
-
-    fig_s2 = px.scatter(df_filtered, x='Daytime_Fatigue', y='Academic_Burnout_Score',
-                        trendline='ols', opacity=0.5,
-                        title="Daytime Fatigue vs Academic Burnout Score",
-                        color_discrete_sequence=['#e74c3c'])
     st.plotly_chart(fig_s2, use_container_width=True)
-
-    
-
-    st.markdown("---")
     
     # --- HISTOGRAMS  ---
     st.subheader("Distributions of Engineered Features")
@@ -184,13 +184,6 @@ elif page == "Visualization":
         st.pyplot(fig2)
 
     st.markdown("---")
-    
-    st.subheader("Academic Stress Level across GPA Ratings")
-    fig3, ax3 = plt.subplots(figsize=(10, 6))
-    sns.boxplot(x='GPA_Rating', y='Academic_Stress_Level', data=df_filtered, palette='viridis', ax=ax3)
-    ax3.set_xlabel('GPA Rating (1 = Poor to 5 = Excellent)')
-    ax3.set_ylabel('Academic Stress Level (0 = No Stress to 3 = Extremely High)')
-    st.pyplot(fig3)
 # ==========================================
 # PAGE 3: MODEL TRAINING
 # ==========================================
