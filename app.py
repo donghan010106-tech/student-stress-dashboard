@@ -119,13 +119,7 @@ elif page == "Visualization":
 
     col_pivot1, col_pivot2 = st.columns(2)
 
-    with col_pivot1:
-        st.markdown("**1. Average Sleep Hygiene Risk by Difficulty Falling Asleep**")
-        pivot1 = df_filtered.groupby('Difficulty_Falling_Asleep')['Sleep_Hygiene_Risk'].mean().reset_index()
-        fig_p1 = px.bar(pivot1, x='Difficulty_Falling_Asleep', y='Sleep_Hygiene_Risk', 
-                        color_discrete_sequence=['#4CAF50'], text_auto='.2f')
-        fig_p1.update_layout(xaxis_title="Difficulty Falling Asleep (0 to 4)", yaxis_title="Avg Sleep Hygiene Risk")
-        st.plotly_chart(fig_p1, use_container_width=True)
+    
 
     with col_pivot2:
         st.markdown("**2. Average Academic Stress Level by GPA Rating**")
@@ -143,12 +137,7 @@ elif page == "Visualization":
     
     col_scat1, col_scat2 = st.columns(2)
     
-    with col_scat1:
-        fig_s1 = px.scatter(df_filtered, x='Phone_Usage_Before_Sleep', y='Sleep_Hygiene_Risk',
-                            trendline='ols', opacity=0.5,
-                            title="Phone Usage vs Sleep Hygiene Risk",
-                            color_discrete_sequence=['#2ecc71'])
-        st.plotly_chart(fig_s1, use_container_width=True)
+    
 
     with col_scat2:
         fig_s2 = px.scatter(df_filtered, x='Daytime_Fatigue', y='Academic_Burnout_Score',
@@ -157,11 +146,7 @@ elif page == "Visualization":
                             color_discrete_sequence=['#e74c3c'])
         st.plotly_chart(fig_s2, use_container_width=True)
 
-    fig_s3 = px.scatter(df_filtered, x='Sleep_Impact_on_Concentration', y='Academic_Burnout_Score',
-                        trendline='ols', opacity=0.5,
-                        title="Sleep Impact on Concentration vs Academic Burnout Score",
-                        color_discrete_sequence=['#3498db'])
-    st.plotly_chart(fig_s3, use_container_width=True)
+    
 
     st.markdown("---")
     
