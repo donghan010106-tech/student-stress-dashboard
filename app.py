@@ -280,3 +280,23 @@ elif page == "Model Training":
 
     plt.tight_layout()
     st.pyplot(fig_combined)
+
+    # 2. Subplot 1: Feature Importance
+    plt.subplot(1, 2, 1)
+    importances = rf_optimized.feature_importances_
+    feat_importances = pd.Series(importances, index=features_model).sort_values()
+    feat_importances.plot(kind='barh', color='#34495e')
+    plt.title('Feature Importance (Optimized Random Forest)')
+
+    # 3. Subplot 2: KDE Plot Comparison
+    plt.subplot(1, 2, 2)
+    sns.kdeplot(y_test, label='Actual (Test)', color='black', linewidth=3)
+    sns.kdeplot(y_pred_ols, label='Predicted (OLS)', color='red', linestyle='--')
+    sns.kdeplot(y_pred_rf, label='Predicted (Random Forest)', color='green')
+    plt.title('Actual vs. Predicted Stress Level Distributions')
+    plt.xlabel('Academic Stress Level')
+    plt.legend()
+
+    # 4. Apply tight_layout and show plots
+    plt.tight_layout()
+    plt.show()
