@@ -120,7 +120,7 @@ elif page == "Visualization":
 
     
 
-    st.markdown("**2. Average Academic Stress Level by GPA Rating**")
+    st.markdown("**Average Academic Stress Level by GPA Rating**")
     pivot2 = df_filtered.groupby('GPA_Rating')['Academic_Stress_Level'].mean().reset_index()
     fig_p2 = px.bar(pivot2, x='GPA_Rating', y='Academic_Stress_Level', 
                     color_discrete_sequence=['#FF9800'], text_auto='.2f')
@@ -130,12 +130,14 @@ elif page == "Visualization":
     st.markdown("---")
     
     # --- SCATTER CHARTS TRỰC TIẾP TỪ SHEET DASHBOARD ---
+    st.subheader("Distribution of Burnout by Stress Level")
     # Tạo bảng map để đổi số thành chữ trên trục X cho đẹp
     df_box = df_clean.copy() # Nếu file bạn đang dùng df_filtered thì đổi tên tương ứng nhé
     stress_map = {0: 'No stress', 1: 'Low stress', 2: 'High stress', 3: 'Extremely high stress'}
     df_box['Stress_Label'] = df_box['Academic_Stress_Level'].map(stress_map)
     
     # Vẽ biểu đồ Boxplot bằng Plotly
+    
     fig_s2 = px.box(df_box, x='Stress_Label', y='Academic_Burnout_Score',
                     color='Stress_Label',
                     title="Stress Level vs Academic Burnout Score",
