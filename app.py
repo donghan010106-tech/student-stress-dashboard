@@ -51,12 +51,12 @@ features_model, X_test, y_test, y_pred_ols, y_pred_rf, rf_optimized = train_mode
 
 # --- NAVIGATION ---
 st.sidebar.title("Navigation")
-page = st.sidebar.radio("Select a page:", ["🧹 Data Preprocessing & EDA", "📊 Visualization", "🤖 Model Training"])
+page = st.sidebar.radio("Select a page:", ["Data Preprocessing & EDA", "Visualization", "Model Training"])
 
 # ==========================================
 # PAGE 1: PREPROCESSING
 # ==========================================
-if page == "🧹 Data Preprocessing & EDA":
+if page == "Data Preprocessing & EDA":
     st.title("Data Preprocessing & EDA")
     raw_count = len(df_raw) if len(df_raw) > 0 else 416 
     clean_count = len(df_clean)
@@ -72,7 +72,7 @@ if page == "🧹 Data Preprocessing & EDA":
 # ==========================================
 # PAGE 2: VISUALIZATION
 # ==========================================
-elif page == "📊 Visualization":
+elif page == "Visualization":
     st.title("Data Visualization")
     
     # 4 KPI Metrics
@@ -113,7 +113,7 @@ elif page == "📊 Visualization":
 # ==========================================
 # PAGE 3: MODEL TRAINING
 # ==========================================
-elif page == "🤖 Model Training":
+elif page == "Model Training":
     st.title("Model Training & Evaluation")
     
     # 1. True vs Predicted Scatter Plots
