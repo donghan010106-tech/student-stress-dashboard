@@ -117,20 +117,10 @@ elif page == "Model Training":
     st.title("Model Training & Evaluation")
     
     # 1. True vs Predicted Scatter Plots
-    st.subheader("1. True vs Predicted Stress Levels")
-    fig_scat, axes = plt.subplots(1, 2, figsize=(14, 6))
-    sns.scatterplot(x=y_test, y=y_pred_ols, ax=axes[0], color="#3498db", alpha=0.6).set_title(f"OLS (R2: {r2_score(y_test, y_pred_ols):.3f})")
-    sns.scatterplot(x=y_test, y=y_pred_rf, ax=axes[1], color="#2ecc71", alpha=0.6).set_title(f"Random Forest (R2: {r2_score(y_test, y_pred_rf):.3f})")
-    for ax in axes: 
-        ax.plot([y_test.min(), y_test.max()], [y_test.min(), y_test.max()], 'r--', lw=2)
-        ax.set_xlabel('Actual Value')
-        ax.set_ylabel('Predicted Value')
-    st.pyplot(fig_scat)
-    
-    st.markdown("---")
+ 
     
     # 2. FEATURE IMPORTANCE & KDE PLOT (THEO CODE CỦA BẠN)
-    st.subheader("2. Feature Importance & Distribution Comparison")
+    st.subheader("1. Feature Importance & Distribution Comparison")
     fig_final = plt.figure(figsize=(16, 6))
     
     # Subplot 1: Feature Importance
