@@ -139,7 +139,7 @@ elif page == "Visualization":
     
     # 4. Relationship between Academic Stress and GPA Rating (Bar Chart)
     st.subheader("Academic Stress Level across GPA Ratings")
-    fig_bar, ax_bar = plt.subplots(figsize=(10, 6))
+    fig_bar, ax_bar = plt.subplots(figsize=(8, 4))
     sns.barplot(x='GPA_Rating', y='Academic_Stress_Level', data=df_clean, palette='viridis', hue='GPA_Rating', legend=False, ax=ax_bar)
     
     # Đặt tiêu đề và trục theo đúng yêu cầu của bạn
