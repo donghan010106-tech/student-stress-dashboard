@@ -57,17 +57,40 @@ page = st.sidebar.radio("Select a page:", ["Data Preprocessing & EDA", "Visualiz
 # PAGE 1: PREPROCESSING
 # ==========================================
 if page == "Data Preprocessing & EDA":
-    st.title("Data Preprocessing & EDA")
-    raw_count = len(df_raw) if len(df_raw) > 0 else 416 
+    st.title("Data Preprocessing & Exploratory Data Analysis")
+    st.markdown("This section explains how the raw data was cleaned and prepared for modeling.")
+    
+    raw_count = len(df_raw) if not df_raw.empty else 416 
     clean_count = len(df_clean)
+    removed_count = raw_count - clean_count
+
+    col1, col2, col3 = st.columns(3)
+    col1.metric("Raw Data Records", f"{raw_count}")
+    col2.metric("Records Removed (Outliers)", f"{removed_count}")
+    col3.metric("Clean Data Records", f"{clean_count}")
     
-    c1, c2, c3 = st.columns(3)
-    c1.metric("Raw Data", f"{raw_count}")
-    c2.metric("Outliers Removed", f"{raw_count - clean_count}")
-    c3.metric("Clean Data", f"{clean_count}")
+    st.markdown("---")
     
-    st.subheader("Clean Data Sample")
-    st.dataframe(df_clean.head())
+    st.subheader("Data Cleaning Conditions (Logic Filters)")
+    st.markdown("""
+    To ensure data quality, we removed responses containing contradictory information:
+    
+    1. **Contradictory Sleep Quality:** High `Sleep_Hygiene_Risk` (>= 20) BUT `Overall_Sleep_Quality` is 'Very Good' (5).
+    2. **Contradictory Fatigue:** Very low `Sleep_Hours_Total` (<= 3.5 hours) BUT no `Daytime_Fatigue` (0).
+    3. **Contradictory Stress:** Extremely high `Academic_Burnout_Score` (>= 20) BUT no `Academic_Stress_Level` (0).
+    """)
+    
+    col_a, col_b = st.columns(2)
+    with col_a:
+        st.subheader("Raw Data Sample")
+        if not df_raw.empty:
+            st.dataframe(df_raw.head())
+        else:
+            st.warning("Raw data file not found.")
+            
+    with col_b:
+        st.subheader("Clean Data Sample")
+        st.dataframe(df_clean.head())
 
 # ==========================================
 # PAGE 2: VISUALIZATION
