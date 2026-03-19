@@ -137,11 +137,6 @@ elif page == "Visualization":
     
     st.markdown("---")
     
-    # --- PIVOT BAR CHARTS TỪ EXCEL ---
-    st.subheader("Average Analytics")
-
-    st.markdown("---")
-    
     # 4. Relationship between Academic Stress and GPA Rating (Bar Chart)
     st.subheader("Academic Stress Level across GPA Ratings")
     fig_bar, ax_bar = plt.subplots(figsize=(10, 6))
