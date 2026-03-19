@@ -140,17 +140,19 @@ elif page == "Visualization":
     # --- PIVOT BAR CHARTS TỪ EXCEL ---
     st.subheader("Average Analytics")
 
-
-    
-
-    st.markdown("**Average Academic Stress Level by GPA Rating**")
-    pivot2 = df_filtered.groupby('GPA_Rating')['Academic_Stress_Level'].mean().reset_index()
-    fig_p2 = px.bar(pivot2, x='GPA_Rating', y='Academic_Stress_Level', 
-                    color_discrete_sequence=['#FF9800'], text_auto='.2f')
-    fig_p2.update_layout(xaxis_title="GPA Rating (1 = Poor to 5 = Excellent)", yaxis_title="Avg Academic Stress Level")
-    st.plotly_chart(fig_p2, use_container_width=True)
-        
     st.markdown("---")
+    
+    # 4. Relationship between Academic Stress and GPA Rating (Bar Chart)
+    st.subheader("Academic Stress Level across GPA Ratings")
+    fig_bar, ax_bar = plt.subplots(figsize=(10, 6))
+    sns.barplot(x='GPA_Rating', y='Academic_Stress_Level', data=df_clean, palette='viridis', hue='GPA_Rating', legend=False, ax=ax_bar)
+    
+    # Đặt tiêu đề và trục theo đúng yêu cầu của bạn
+    ax_bar.set_title('Average Academic Stress Level across GPA Ratings')
+    ax_bar.set_xlabel('GPA Rating (1=Poor to 5=Excellent)')
+    ax_bar.set_ylabel('Mean Academic Stress Level (0-3)')
+    
+    st.pyplot(fig_bar)
     
     # --- SCATTER CHARTS TRỰC TIẾP TỪ SHEET DASHBOARD ---
     st.subheader("Distribution of Burnout by Stress Level")
