@@ -95,7 +95,7 @@ if page == "Data Preprocessing & EDA":
 # ==========================================
 # PAGE 2: VISUALIZATION
 # ==========================================
-elif page == "Visualization":
+elif page == "Visualization": # Lưu ý: Đảm bảo tên này khớp với thanh menu sidebar của bạn nhé
     st.title("Data Visualization & Key Metrics")
     
     st.sidebar.subheader("Filters")
@@ -104,140 +104,147 @@ elif page == "Visualization":
     
     df_filtered = df_clean[(df_clean['Year'].isin(selected_year)) & (df_clean['Gender'].isin(selected_gender))]
     
-    # --- 4 THẺ KPI TỪ EXCEL DASHBOARD ---
-    kpi1, kpi2, kpi3, kpi4 = st.columns(4)
-    
-    # Tính toán động dựa trên bộ lọc
-    total_students = len(df_filtered)
-    avg_stress = df_filtered['Academic_Stress_Level'].mean()
-    avg_gpa = df_filtered['GPA_Rating'].mean()
-    avg_sleep_risk = df_filtered['Sleep_Hygiene_Risk'].mean()
-    
-    # Hiển thị
-    kpi1.metric("Total Students", f"{total_students}")
-    kpi2.metric("Avg Stress Level", f"{avg_stress:.2f}")
-    kpi3.metric("Avg GPA Rating", f"{avg_gpa:.1f}")
-    kpi4.metric("Avg Sleep Hygiene Risk", f"{avg_sleep_risk:.1f}")
-    # ------------------------------------
-    st.markdown("---")
-    
-    st.subheader("Distribution of Academic Stress Levels")
-    
-    stress_mapping = {0: 'No stress', 1: 'Low stress', 2: 'High stress', 3: 'Extremely high stress'}
-    df_pie = df_filtered.copy()
-    df_pie['Stress_Label'] = df_pie['Academic_Stress_Level'].map(stress_mapping)
-    stress_counts = df_pie['Stress_Label'].value_counts().reset_index()
-    stress_counts.columns = ['Stress Level', 'Count']
-    
-    fig_pie = px.pie(stress_counts, values='Count', names='Stress Level', 
-                     color_discrete_sequence=px.colors.qualitative.Pastel,
-                     hole=0.3) 
-    fig_pie.update_traces(textposition='inside', textinfo='percent+label')
-    st.plotly_chart(fig_pie, use_container_width=True)
-    
+    # --- CƠ CHẾ BẢO VỆ: Nếu bộ lọc trống thì báo lỗi lịch sự chứ không sập web ---
+    if df_filtered.empty:
+        st.warning("⚠️ Vui lòng chọn ít nhất một Năm học và một Giới tính ở thanh bộ lọc bên trái.")
+    else:
+        # --- 4 THẺ KPI TỪ EXCEL DASHBOARD ---
+        kpi1, kpi2, kpi3, kpi4 = st.columns(4)
+        
+        # Tính toán động dựa trên bộ lọc
+        total_students = len(df_filtered)
+        avg_stress = df_filtered['Academic_Stress_Level'].mean()
+        avg_gpa = df_filtered['GPA_Rating'].mean()
+        avg_sleep_risk = df_filtered['Sleep_Hygiene_Risk'].mean()
+        
+        # Hiển thị
+        kpi1.metric("Total Students", f"{total_students}")
+        kpi2.metric("Avg Stress Level", f"{avg_stress:.2f}")
+        kpi3.metric("Avg GPA Rating", f"{avg_gpa:.1f}")
+        kpi4.metric("Avg Sleep Hygiene Risk", f"{avg_sleep_risk:.1f}")
+        # ------------------------------------
+        st.markdown("---")
+        
+        st.subheader("Distribution of Academic Stress Levels")
+        
+        stress_mapping = {0: 'No stress', 1: 'Low stress', 2: 'High stress', 3: 'Extremely high stress'}
+        df_pie = df_filtered.copy()
+        df_pie['Stress_Label'] = df_pie['Academic_Stress_Level'].map(stress_mapping)
+        stress_counts = df_pie['Stress_Label'].value_counts().reset_index()
+        stress_counts.columns = ['Stress Level', 'Count']
+        
+        fig_pie = px.pie(stress_counts, values='Count', names='Stress Level', 
+                         color_discrete_sequence=px.colors.qualitative.Pastel,
+                         hole=0.3) 
+        fig_pie.update_traces(textposition='inside', textinfo='percent+label')
+        st.plotly_chart(fig_pie, use_container_width=True)
+        
+        # ==========================================
+        st.markdown("---")
+        st.subheader("Detailed Distribution Analysis")
+        
+        # Chia làm 2 cột để đặt 2 biểu đồ cạnh nhau cho đẹp
+        col_bar1, col_bar2 = st.columns(2)
 
-    
-    #2
-        
-    st.markdown("---")
-    st.subheader("Detailed Distribution Analysis")
-    
-    # Chia làm 2 cột để đặt 2 biểu đồ cạnh nhau cho đẹp
-    col_bar1, col_bar2 = st.columns(2)
+        with col_bar1:
+            # Biểu đồ 1: GPA vs Stress (ĐÃ SỬA df_clean -> df_filtered)
+            fig1, ax1 = plt.subplots(figsize=(8, 6))
+            sns.barplot(x='GPA_Rating', y='Academic_Stress_Level', data=df_filtered, palette='Blues_r', errorbar=None, ax=ax1)
+            
+            ax1.set_title('Average Stress Distribution on GPA rating', fontsize=14, fontweight='bold')
+            ax1.set_xlabel('GPA Rating', fontsize=12)
+            ax1.set_ylabel('Average Stress', fontsize=12)
+            
+            for p in ax1.patches:
+                ax1.annotate(format(p.get_height(), '.2f'),
+                            (p.get_x() + p.get_width() / 2., p.get_height()),
+                            ha='center', va='center',
+                            xytext=(0, 9), textcoords='offset points',
+                            fontsize=11, fontweight='bold')
+            
+            # Mở rộng trục Y thêm 10% để các con số trên đầu cột không bị lẹm mất
+            ax1.set_ylim(0, ax1.get_ylim()[1] * 1.1) 
+            
+            # Hiển thị trên Streamlit
+            st.pyplot(fig1)
 
-    with col_bar1:
-        # Biểu đồ 1: GPA vs Stress
-        fig1, ax1 = plt.subplots(figsize=(8, 6))
-        sns.barplot(x='GPA_Rating', y='Academic_Stress_Level', data=df_clean, palette='Blues_r', errorbar=None, ax=ax1)
+        with col_bar2:
+            # Biểu đồ 2: Stress vs Sleep Hygiene (ĐÃ SỬA df_clean -> df_filtered)
+            fig2, ax2 = plt.subplots(figsize=(8, 6))
+            sns.barplot(x='Academic_Stress_Level', y='Sleep_Hygiene_Risk', data=df_filtered, palette='Reds', errorbar=None, ax=ax2)
+            
+            ax2.set_title('Sleep_Hygiene_Risk Distribution on Stress Level', fontsize=14, fontweight='bold')
+            ax2.set_xlabel('Stress Level', fontsize=12)
+            ax2.set_ylabel('Sleep_Hygiene_Risk', fontsize=12)
+            
+            for p in ax2.patches:
+                ax2.annotate(format(p.get_height(), '.2f'),
+                            (p.get_x() + p.get_width() / 2., p.get_height()),
+                            ha='center', va='center',
+                            xytext=(0, 9), textcoords='offset points',
+                            fontsize=11, fontweight='bold')
+            
+            ax2.set_ylim(0, ax2.get_ylim()[1] * 1.1)
+            
+            # Hiển thị trên Streamlit
+            st.pyplot(fig2)
         
-        ax1.set_title('Average Stress Distribution on GPA rating', fontsize=14, fontweight='bold')
-        ax1.set_xlabel('GPA Rating', fontsize=12)
-        ax1.set_ylabel('Average Stress', fontsize=12)
+        # ==========================================
+        # ĐÃ BỔ SUNG KHAI BÁO df_box CHO BOXPLOT
+        df_box = df_filtered.copy()
+        df_box['Stress_Label'] = df_box['Academic_Stress_Level'].map(stress_mapping)
         
-        for p in ax1.patches:
-            ax1.annotate(format(p.get_height(), '.2f'),
-                        (p.get_x() + p.get_width() / 2., p.get_height()),
-                        ha='center', va='center',
-                        xytext=(0, 9), textcoords='offset points',
-                        fontsize=11, fontweight='bold')
+        fig_s2 = px.box(df_box, x='Stress_Label', y='Academic_Burnout_Score',
+                        color='Stress_Label',
+                        title="Stress Level vs Academic Burnout Score",
+                        category_orders={"Stress_Label": ['No stress', 'Low stress', 'High stress', 'Extremely high stress']},
+                        color_discrete_sequence=px.colors.qualitative.Pastel)
         
-        # Mở rộng trục Y thêm 10% để các con số trên đầu cột không bị lẹm mất
-        ax1.set_ylim(0, ax1.get_ylim()[1] * 1.1) 
+        # Ẩn chú thích (legend) phụ vì trục X đã hiện tên rồi
+        fig_s2.update_layout(showlegend=False, xaxis_title="Academic Stress Level", yaxis_title="Burnout Score")
         
-        # Hiển thị trên Streamlit
-        st.pyplot(fig1)
+        st.plotly_chart(fig_s2, use_container_width=True)
+        
+        # ==========================================
+        # --- HISTOGRAMS  ---
+        st.subheader("Distributions of Engineered Features")
+        fig_dist = plt.figure(figsize=(14, 5))
 
-    with col_bar2:
-        # Biểu đồ 2: Stress vs Sleep Hygiene
-        fig2, ax2 = plt.subplots(figsize=(8, 6))
-        sns.barplot(x='Academic_Stress_Level', y='Sleep_Hygiene_Risk', data=df_clean, palette='Reds', errorbar=None, ax=ax2)
-        
-        ax2.set_title('Sleep_Hygiene_Risk Distribution on Stress Level', fontsize=14, fontweight='bold')
-        ax2.set_xlabel('Stress Level', fontsize=12)
-        ax2.set_ylabel('Sleep_Hygiene_Risk', fontsize=12)
-        
-        for p in ax2.patches:
-            ax2.annotate(format(p.get_height(), '.2f'),
-                        (p.get_x() + p.get_width() / 2., p.get_height()),
-                        ha='center', va='center',
-                        xytext=(0, 9), textcoords='offset points',
-                        fontsize=11, fontweight='bold')
-        
-        ax2.set_ylim(0, ax2.get_ylim()[1] * 1.1)
-        
-        # Hiển thị trên Streamlit
-        st.pyplot(fig2)
-    
-    # Vẽ biểu đồ Boxplot bằng Plotly
-    
-    fig_s2 = px.box(df_box, x='Stress_Label', y='Academic_Burnout_Score',
-                    color='Stress_Label',
-                    title="Stress Level vs Academic Burnout Score",
-                    category_orders={"Stress_Label": ['No stress', 'Low stress', 'High stress', 'Extremely high stress']},
-                    color_discrete_sequence=px.colors.qualitative.Pastel)
-    
-    # Ẩn chú thích (legend) phụ vì trục X đã hiện tên rồi
-    fig_s2.update_layout(showlegend=False, xaxis_title="Academic Stress Level", yaxis_title="Burnout Score")
-    
-    st.plotly_chart(fig_s2, use_container_width=True)
-    
-    # --- HISTOGRAMS  ---
-    st.subheader("Distributions of Engineered Features")
-    fig_dist = plt.figure(figsize=(14, 5))
+        plt.subplot(1, 2, 1)
+        sns.histplot(df_filtered['Sleep_Hygiene_Risk'], kde=True, color='teal')
+        plt.title('Distribution of Sleep Hygiene Risk')
 
-    plt.subplot(1, 2, 1)
-    sns.histplot(df_filtered['Sleep_Hygiene_Risk'], kde=True, color='teal')
-    plt.title('Distribution of Sleep Hygiene Risk')
+        plt.subplot(1, 2, 2)
+        sns.histplot(df_filtered['Academic_Burnout_Score'], kde=True, color='coral')
+        plt.title('Distribution of Academic Burnout Score')
 
-    plt.subplot(1, 2, 2)
-    sns.histplot(df_filtered['Academic_Burnout_Score'], kde=True, color='coral')
-    plt.title('Distribution of Academic Burnout Score')
-
-    plt.tight_layout()
-    st.pyplot(fig_dist)
-    
-    st.markdown("---")
-
-    col1, col2 = st.columns(2)
-    with col1:
-        st.subheader("Distribution of Sleep Hours")
-        fig1, ax1 = plt.subplots(figsize=(8, 5))
-        sns.histplot(df_filtered['Sleep_Hours_Total'], kde=True, color='skyblue', ax=ax1)
-        ax1.set_xlabel("Sleep Hours")
-        ax1.set_ylabel("Count")
-        st.pyplot(fig1)
+        plt.tight_layout()
+        st.pyplot(fig_dist)
         
-    with col2:
-        st.subheader("Impact of Exercise on Stress Level")
-        fig2, ax2 = plt.subplots(figsize=(8, 5))
-        # Tính điểm stress trung bình theo tần suất tập thể dục
-        avg_stress_by_exercise = df_clean.groupby('Exercise_Frequency')['Academic_Stress_Level'].mean().reset_index()
-        sns.barplot(x='Exercise_Frequency', y='Academic_Stress_Level', data=avg_stress_by_exercise, palette='coolwarm', ax=ax2)
-        ax2.set_xlabel("Exercise Frequency (0 = Never to 4 = Every day)")
-        ax2.set_ylabel("Average Academic Stress Level")
-        st.pyplot(fig2)
+        st.markdown("---")
 
-    st.markdown("---")
+        col1, col2 = st.columns(2)
+        with col1:
+            st.subheader("Distribution of Sleep Hours")
+            fig1, ax1 = plt.subplots(figsize=(8, 5))
+            sns.histplot(df_filtered['Sleep_Hours_Total'], kde=True, color='skyblue', ax=ax1)
+            ax1.set_xlabel("Sleep Hours")
+            ax1.set_ylabel("Count")
+            st.pyplot(fig1)
+            
+        with col2:
+            st.subheader("Impact of Exercise on Stress Level")
+            fig2, ax2 = plt.subplots(figsize=(8, 5))
+            
+            # Tính điểm stress trung bình theo tần suất tập thể dục (ĐÃ SỬA df_clean -> df_filtered)
+            avg_stress_by_exercise = df_filtered.groupby('Exercise_Frequency')['Academic_Stress_Level'].mean().reset_index()
+            sns.barplot(x='Exercise_Frequency', y='Academic_Stress_Level', data=avg_stress_by_exercise, palette='coolwarm', ax=ax2)
+            
+            ax2.set_xlabel("Exercise Frequency (0 = Never to 4 = Every day)")
+            ax2.set_ylabel("Average Academic Stress Level")
+            st.pyplot(fig2)
+
+        st.markdown("---")
 # ==========================================
 # PAGE 3: MODEL TRAINING
 # ==========================================
