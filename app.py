@@ -135,26 +135,58 @@ elif page == "Visualization":
     fig_pie.update_traces(textposition='inside', textinfo='percent+label')
     st.plotly_chart(fig_pie, use_container_width=True)
     
+
+    
+    #2
+        
     st.markdown("---")
+    st.subheader("Detailed Distribution Analysis")
     
-    # 4. Relationship between Academic Stress and GPA Rating (Bar Chart)
-    st.subheader("Academic Stress Level across GPA Ratings")
-    fig_bar, ax_bar = plt.subplots(figsize=(8, 4))
-    sns.barplot(x='GPA_Rating', y='Academic_Stress_Level', data=df_clean, palette='viridis', hue='GPA_Rating', legend=False, ax=ax_bar)
-    
-    # Đặt tiêu đề và trục theo đúng yêu cầu của bạn
-    ax_bar.set_title('Average Academic Stress Level across GPA Ratings')
-    ax_bar.set_xlabel('GPA Rating (1=Poor to 5=Excellent)')
-    ax_bar.set_ylabel('Mean Academic Stress Level (0-3)')
-    
-    st.pyplot(fig_bar)
-    
-    # --- SCATTER CHARTS TRỰC TIẾP TỪ SHEET DASHBOARD ---
-    st.subheader("Distribution of Burnout by Stress Level")
-    # Tạo bảng map để đổi số thành chữ trên trục X cho đẹp
-    df_box = df_clean.copy() # Nếu file bạn đang dùng df_filtered thì đổi tên tương ứng nhé
-    stress_map = {0: 'No stress', 1: 'Low stress', 2: 'High stress', 3: 'Extremely high stress'}
-    df_box['Stress_Label'] = df_box['Academic_Stress_Level'].map(stress_map)
+    # Chia làm 2 cột để đặt 2 biểu đồ cạnh nhau cho đẹp
+    col_bar1, col_bar2 = st.columns(2)
+
+    with col_bar1:
+        # Biểu đồ 1: GPA vs Stress
+        fig1, ax1 = plt.subplots(figsize=(8, 6))
+        sns.barplot(x='GPA_Rating', y='Academic_Stress_Level', data=df_clean, palette='Blues_r', errorbar=None, ax=ax1)
+        
+        ax1.set_title('Average Stress Distribution on GPA rating', fontsize=14, fontweight='bold')
+        ax1.set_xlabel('GPA Rating', fontsize=12)
+        ax1.set_ylabel('Average Stress', fontsize=12)
+        
+        for p in ax1.patches:
+            ax1.annotate(format(p.get_height(), '.2f'),
+                        (p.get_x() + p.get_width() / 2., p.get_height()),
+                        ha='center', va='center',
+                        xytext=(0, 9), textcoords='offset points',
+                        fontsize=11, fontweight='bold')
+        
+        # Mở rộng trục Y thêm 10% để các con số trên đầu cột không bị lẹm mất
+        ax1.set_ylim(0, ax1.get_ylim()[1] * 1.1) 
+        
+        # Hiển thị trên Streamlit
+        st.pyplot(fig1)
+
+    with col_bar2:
+        # Biểu đồ 2: Stress vs Sleep Hygiene
+        fig2, ax2 = plt.subplots(figsize=(8, 6))
+        sns.barplot(x='Academic_Stress_Level', y='Sleep_Hygiene_Risk', data=df_clean, palette='Reds', errorbar=None, ax=ax2)
+        
+        ax2.set_title('Sleep_Hygiene_Risk Distribution on Stress Level', fontsize=14, fontweight='bold')
+        ax2.set_xlabel('Stress Level', fontsize=12)
+        ax2.set_ylabel('Sleep_Hygiene_Risk', fontsize=12)
+        
+        for p in ax2.patches:
+            ax2.annotate(format(p.get_height(), '.2f'),
+                        (p.get_x() + p.get_width() / 2., p.get_height()),
+                        ha='center', va='center',
+                        xytext=(0, 9), textcoords='offset points',
+                        fontsize=11, fontweight='bold')
+        
+        ax2.set_ylim(0, ax2.get_ylim()[1] * 1.1)
+        
+        # Hiển thị trên Streamlit
+        st.pyplot(fig2)
     
     # Vẽ biểu đồ Boxplot bằng Plotly
     
