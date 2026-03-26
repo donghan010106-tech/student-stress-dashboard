@@ -75,9 +75,9 @@ if page == "Data Preprocessing & EDA":
     st.markdown("""
     To ensure data quality, we removed responses containing contradictory information:
     
-    1. **Contradictory Sleep Quality:** High `Sleep_Hygiene_Risk` (>= 20) BUT `Overall_Sleep_Quality` is 'Very Good' (5).
-    2. **Contradictory Fatigue:** Very low `Sleep_Hours_Total` (<= 3.5 hours) BUT no `Daytime_Fatigue` (0).
-    3. **Contradictory Stress:** Extremely high `Academic_Burnout_Score` (>= 20) BUT no `Academic_Stress_Level` (0).
+    1. **Contradictory Sleep Quality:** High `Sleep_Hygiene_Risk` (>= 16) BUT `Overall_Sleep_Quality` (>= 4).
+    2. **Contradictory Fatigue:** Very low `Sleep_Hours_Total` (<= 3.5 hours) BUT `Daytime_Fatigue` (<= 1).
+    3. **Contradictory Stress:** Extremely high `Academic_Burnout_Score` (>= 16) BUT `Academic_Stress_Level` (<= ).
     """)
     
     col_a, col_b = st.columns(2)
