@@ -77,7 +77,7 @@ if page == "Data Preprocessing & EDA":
     
     1. **Contradictory Sleep Quality:** High `Sleep_Hygiene_Risk` (>= 16) BUT `Overall_Sleep_Quality` (>= 4).
     2. **Contradictory Fatigue:** Very low `Sleep_Hours_Total` (<= 3.5 hours) BUT `Daytime_Fatigue` (<= 1).
-    3. **Contradictory Stress:** Extremely high `Academic_Burnout_Score` (>= 16) BUT `Academic_Stress_Level` (<= ).
+    3. **Contradictory Stress:** Extremely high `Academic_Burnout_Score` (>= 16) BUT `Academic_Stress_Level` (<= 1).
     """)
     
     col_a, col_b = st.columns(2)
